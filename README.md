@@ -5,7 +5,7 @@
 
 Reference guide for package maintainers, starts here:
 
-- [dreamcat4/tvh.ubuntu.build.*](ubuntu/README.md)
+- [dreamcat4/tvh.ubuntu.build.*](ubuntu/0. maintainers-guide.md)
 
 ### Making pkgs for other Distros
 
