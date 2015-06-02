@@ -46,3 +46,17 @@ Follow all the the other steps in the Ubuntu guide - it is mostly the same. Just
 * Commit changes to git.
 * Push the new `centos` folder up to github.
 
+### Cross-compiling for ARM
+
+The latest official arch linux package of tvheadend:
+
+* https://aur.archlinux.org/packages/tvheadend/
+
+Some useful links for cross-compiling:
+
+* http://vraidsys.com/2013/06/cross-compile-tvheadend-for-arm-cortex-a9/
+* https://github.com/jzerbe/jzerbe.github.com/blob/master/_posts/2013-06-22-cross-compile-tvheadend-for-arm-cortex-a9.md
+* http://www.holik.at/index.php?m=06&y=13&entry=entry130627-175237
+
+Docker hub is an x86 build farm. Tvheadend would need to be cross compiled (intel host) to be built on those servers.
+
