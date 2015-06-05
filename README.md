@@ -2,16 +2,23 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
  
 
+- [Looking for tvheadend builds?](#looking-for-tvheadend-builds)
 - [dreamcat4/tvh.ubuntu.build.*](#dreamcat4tvhubuntubuild)
-  - [Authoring packages for other Distros](#authoring-packages-for-other-distros)
+- [Authoring packages for other Distros](#authoring-packages-for-other-distros)
+- [Cross-compiling for ARM](#cross-compiling-for-arm)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
-### For Tvheadend developers only
+### Looking for tvheadend builds?
 
-If you are not involved with officially distributing tvheadend software, there is no reason to go to this trouble of building apt packages of tvheadend. You should instead just download and enjoy the official pre-built tvheadend APT packages. Available from:
+We have builds for the following operating systems and architectures:
+
+* Ubuntu `14.04.2` *and higher* - Debian APT.
+  * `Intel x86_64`
+
+Download and enjoy the official pre-built tvheadend packages. Available from:
 
 https://tvheadend.org/projects/tvheadend/wiki/AptRepository
 
