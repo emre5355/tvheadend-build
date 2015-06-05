@@ -18,7 +18,7 @@
 
 Regular user? We have auto builds for the following operating systems and architectures:
 
-* Ubuntu `14.04.2` *and higher* - Debian APT.
+* Ubuntu `14.04.2` *and higher* - (APT `.debs`)
   * `Intel x86_64`
 
 Download and enjoy the official pre-built tvheadend packages. Available from:
