@@ -82,9 +82,8 @@ Some useful links for cross-compiling:
 
 We are interested in any maintainer(s) who wishes to set up the following:
 
-* Official RPM auto builds for Centos, Fedora, etc
-* Official ARM builds for Rpi2, Odroid-C1, etc
-* Official Debian builds, for Intel `x86_64` architecture
+* RPM auto builds for Centos, Fedora, etc
+* ARM builds for Rpi2, Odroid-C1, etc
 
 ***Note:*** We can only justifty supporting platforms which are *sufficiently popular at this time*. Meaning that the overall user demand should clearly exceed the cost of setting up, running & maintaining a reliable automated builds system.
 
