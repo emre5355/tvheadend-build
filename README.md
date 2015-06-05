@@ -25,7 +25,7 @@ Download and enjoy the official pre-built tvheadend packages. Available from:
 
 https://tvheadend.org/projects/tvheadend/wiki/AptRepository
 
-Missing linux distro? Missing architecture? ---> [See here]([Contact](#contact)).
+Missing linux distro? Missing architecture? ---> [See here](#contact).
 
 ### Reference example: Ubuntu builds
 **_Build chain for Ubuntu .deb binary pkgs of Tvheadend server_**
