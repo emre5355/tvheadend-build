@@ -6,6 +6,7 @@
 - [Reference example: Ubuntu builds](#reference-example-ubuntu-builds)
 - [Authoring packages for other Distros](#authoring-packages-for-other-distros)
 - [Cross-compiling for ARM](#cross-compiling-for-arm)
+- [Contact](#contact)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -72,5 +73,19 @@ Some useful links for cross-compiling:
 * http://vraidsys.com/2013/06/cross-compile-tvheadend-for-arm-cortex-a9/
 * https://github.com/jzerbe/jzerbe.github.com/blob/master/_posts/2013-06-22-cross-compile-tvheadend-for-arm-cortex-a9.md
 * http://www.holik.at/index.php?m=06&y=13&entry=entry130627-175237
+
+### Contact
+
+We are interested in any maintainer(s) who wishes to set up the following:
+
+* Official RPM auto builds for Centos, Fedora, etc
+* Official ARM builds for Rpi2, Odroid-C1, etc
+* Official Debian builds, for Intel `x86_64` architecture
+
+You can establish contact in any of the following ways:
+
+* Open an issue on this Github repository --> https://github.com/tvheadend/tvheadend-build/issues/new
+* Join the `#hts` channel on Freenode.net IRC server
+* Email: `dreamcat4@gmail.com`
 
 
