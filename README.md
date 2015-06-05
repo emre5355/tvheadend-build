@@ -3,7 +3,7 @@
  
 
 - [Looking for tvheadend builds?](#looking-for-tvheadend-builds)
-- [dreamcat4/tvh.ubuntu.build.*](#dreamcat4tvhubuntubuild)
+- [Reference example: Ubuntu builds](#reference-example-ubuntu-builds)
 - [Authoring packages for other Distros](#authoring-packages-for-other-distros)
 - [Cross-compiling for ARM](#cross-compiling-for-arm)
 
@@ -13,7 +13,7 @@
 
 ### Looking for tvheadend builds?
 
-We have builds for the following operating systems and architectures:
+We have auto builds for the following operating systems and architectures:
 
 * Ubuntu `14.04.2` *and higher* - Debian APT.
   * `Intel x86_64`
@@ -22,18 +22,18 @@ Download and enjoy the official pre-built tvheadend packages. Available from:
 
 https://tvheadend.org/projects/tvheadend/wiki/AptRepository
 
-### dreamcat4/tvh.ubuntu.build.*
-**_Builders for Ubuntu .deb binary pkgs of Tvheadend server_**
+### Reference example: Ubuntu builds
+**_Build chain for Ubuntu .deb binary pkgs of Tvheadend server_**
 
 Reference guide for package maintainers, starts here:
 
-- [dreamcat4/tvh.ubuntu.build.*](ubuntu/0. maintainers-guide.md)
-
-The guide above ^^ is for ubuntu. But most of the steps are similar for other distros.
+* [Maintainers Guide - ubuntu builds](ubuntu/0. maintainers-guide.md)
 
 ### Authoring packages for other Distros
 
-There are now packages for ubuntu. But what about Debian, openSUSE, Fedora, CentOS, Arch and whatever other distros ?
+There are now packages for ubuntu. But what about Debian, openSUSE, Fedora, CentOS, Arch and whatever other distros ? You must follow / tweak the reference example to suit your needs:
+
+* [Maintainers Guide - ubuntu builds](ubuntu/0. maintainers-guide.md)
 
 For this example, we use the `centos` distribution. We assume you are also a user of `centos` who is familiar with it's package manager.
 
