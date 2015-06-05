@@ -25,6 +25,8 @@ Download and enjoy the official pre-built tvheadend packages. Available from:
 
 https://tvheadend.org/projects/tvheadend/wiki/AptRepository
 
+Missing linux distro? Missing architecture? ---> [See here]([Contact](#contact)).
+
 ### Reference example: Ubuntu builds
 **_Build chain for Ubuntu .deb binary pkgs of Tvheadend server_**
 
@@ -83,6 +85,8 @@ We are interested in any maintainer(s) who wishes to set up the following:
 * Official RPM auto builds for Centos, Fedora, etc
 * Official ARM builds for Rpi2, Odroid-C1, etc
 * Official Debian builds, for Intel `x86_64` architecture
+
+Bearing in mind that we can only justifty supporting platforms which are *sufficiently popular at this time*. When the overall user demand exceeds the cost of setting up, running & maintaining a reliable automated builds system. Also: *we can only support build targets which can compile on the Docker Hub server farm. They are exclusively `Intel x86_64` linux machines.*
 
 You will be provided with sufficient support for setting up your build target, in conjunction with the [maintainer's reference guide](ubuntu/0. maintainers-guide.md). A working knowledge of GIT and Docker is beneficial. But more relevant is your experience with the target architecture. And a commitment to providing the results as a public builds, to be shared for all.
 
