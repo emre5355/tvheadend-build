@@ -9,7 +9,13 @@
 
 ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## dreamcat4/tvh.ubuntu.build.*
+### For Tvheadend developers only
+
+If you are not involved with officially distributing tvheadend software, there is no reason to go to this trouble of building apt packages of tvheadend. You should instead just download and enjoy the official pre-built tvheadend APT packages. Available from:
+
+https://tvheadend.org/projects/tvheadend/wiki/AptRepository
+
+### dreamcat4/tvh.ubuntu.build.*
 **_Builders for Ubuntu .deb binary pkgs of Tvheadend server_**
 
 Reference guide for package maintainers, starts here:
@@ -48,9 +54,7 @@ Follow all the the other steps in the Ubuntu guide - it is mostly the same. Just
 
 ### Cross-compiling for ARM
 
-The latest official arch linux package of tvheadend:
-
-* https://aur.archlinux.org/packages/tvheadend/
+Dockerhub is an `x86_64` build farm. So to use Dockerhub for compiling Tvheadend for other architectures means cross compiling on intel host.
 
 Some useful links for cross-compiling:
 
@@ -58,5 +62,4 @@ Some useful links for cross-compiling:
 * https://github.com/jzerbe/jzerbe.github.com/blob/master/_posts/2013-06-22-cross-compile-tvheadend-for-arm-cortex-a9.md
 * http://www.holik.at/index.php?m=06&y=13&entry=entry130627-175237
 
-Docker hub is an x86 build farm. Tvheadend would need to be cross compiled (intel host) to be built on those servers.
 
