@@ -63,6 +63,10 @@ Follow all the the other steps in the Ubuntu guide - it is mostly the same. Just
 
 Dockerhub is an `x86_64` build farm. So to use Dockerhub for compiling Tvheadend for other architectures means cross compiling on intel host.
 
+You must follow / tweak the reference example to suit your needs:
+
+* [Maintainers Guide - ubuntu builds](ubuntu/0. maintainers-guide.md)
+
 Some useful links for cross-compiling:
 
 * http://vraidsys.com/2013/06/cross-compile-tvheadend-for-arm-cortex-a9/
