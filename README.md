@@ -1,3 +1,7 @@
+![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+
+## Tvheadend - auto builds
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
  
@@ -10,11 +14,9 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
-
 ### Looking for tvheadend builds?
 
-We have auto builds for the following operating systems and architectures:
+Regular user? We have auto builds for the following operating systems and architectures:
 
 * Ubuntu `14.04.2` *and higher* - Debian APT.
   * `Intel x86_64`
@@ -26,7 +28,7 @@ https://tvheadend.org/projects/tvheadend/wiki/AptRepository
 ### Reference example: Ubuntu builds
 **_Build chain for Ubuntu .deb binary pkgs of Tvheadend server_**
 
-Reference guide for package maintainers, starts here:
+This is the Reference Guide for package maintainers, it starts here:
 
 * [Maintainers Guide - ubuntu builds](ubuntu/0. maintainers-guide.md)
 
