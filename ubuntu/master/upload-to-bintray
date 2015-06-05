@@ -76,9 +76,4 @@ for distfile in $tvh_deb $tvh_changes $tvh_dbg_deb; do
 done
 
 
-# Workaround for issue #1 - https://github.com/tvheadend/tvheadend-build/issues/1
-# This API call only works if your bintray account has admin access to the official 'tvheadend' bintray meta account
-curl -i -u${bintray_user}:${bintray_key} -X POST https://api.bintray.com/calc_metadata/tvheadend/ubuntu
-
-
 
