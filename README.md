@@ -86,9 +86,9 @@ We are interested in any maintainer(s) who wishes to set up the following:
 * Official ARM builds for Rpi2, Odroid-C1, etc
 * Official Debian builds, for Intel `x86_64` architecture
 
-**NOTE:** We can only justifty supporting platforms which are *sufficiently popular at this time*. Meaning that the overall user demand should clearly exceed the cost of setting up, running & maintaining a reliable automated builds system.
+***NOTE:*** We can only justifty supporting platforms which are *sufficiently popular at this time*. Meaning that the overall user demand should clearly exceed the cost of setting up, running & maintaining a reliable automated builds system.
 
-**Also:** *we can only support build targets which will compile on the Docker Hub server farm. Those are exclusively `Intel x86_64` linux machines.*
+***Also:*** *we can only support build targets which will compile on the Docker Hub server farm. Those are exclusively `Intel x86_64` linux machines.*
 
 You will be provided with sufficient support for setting up your build target, in conjunction with the [maintainer's reference guide](ubuntu/0. maintainers-guide.md). A working knowledge of GIT and Docker is beneficial. But more relevant is your experience with the target architecture. And a commitment to providing the results as a public builds, to be shared for all.
 
