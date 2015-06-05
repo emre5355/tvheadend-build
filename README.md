@@ -84,6 +84,8 @@ We are interested in any maintainer(s) who wishes to set up the following:
 * Official ARM builds for Rpi2, Odroid-C1, etc
 * Official Debian builds, for Intel `x86_64` architecture
 
+You will be provided with sufficient support for setting up your build target, in conjunction with the [maintainer's reference guide](ubuntu/0. maintainers-guide.md). A working knowledge of GIT and Docker is beneficial. But more relevant is your experience with the target architecture. And a commitment to providing the results as a public builds, to be shared for all.
+
 You can establish contact in any of the following ways:
 
 * Open an issue on this Github repository --> https://github.com/tvheadend/tvheadend-build/issues/new
