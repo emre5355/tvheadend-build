@@ -16,20 +16,22 @@
 
 ### Looking for tvheadend builds?
 
-Regular user? Download and enjoy the official pre-built tvheadend packages. We have auto builds for the following operating systems and architectures:
+Regular user? Download and enjoy the official pre-built tvheadend packages. We make the auto builds on the following operating systems and architectures:
 
-* Ubuntu - APT `.debs`
+* Docker Hub build farm
 * `Intel x86_64` architecture
+* Ubuntu `14.04.2` 'Trusty' --> Produces all of our 'ubuntu' APT debs
 
 They have been reported to work on all of these Linux distributions:
 
 * Ubuntu `14.04` - 'Trusty'
 * Ubuntu `14.10` - 'Utopic'
 * Ubuntu `15.04` - 'Vivid'
+* Mint Linux `17` - 'Qiuana' (not confirmed)
 * Mint Linux `17.1` - 'Rebecca' or 'Cinnamon'
 * Debian `8.0` - 'Jessie'
 
-*However they do NOT work* for:
+*NOT Supported / Don't work:*
 
 * `Intel i386` architecture
 * Debian `7.0` - 'Wheezy' (oldstable)
