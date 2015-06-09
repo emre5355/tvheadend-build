@@ -19,38 +19,28 @@
 Regular user? Download and enjoy the official pre-built tvheadend packages. We have auto builds for the following operating systems and architectures:
 
 * Ubuntu - APT `.debs`
-* for `Intel x86_64`
+* `Intel x86_64` architecture
 
 They have been reported to work on all of these Linux distributions:
 
-*  Ubuntu
-  * `14.04` - 'Trusty'
-  * `14.10` - 'Utopic'
-  * `15.04` - 'Vivid'
-  * `15.10` - 'Wily'
-
-* Mint Linux
-  * `17.1` - 'Rebecca' or 'Cinnamon'
-
-* Debian
-  * `8.0` - 'Jessie'
+* Ubuntu `14.04` - 'Trusty'
+* Ubuntu `14.10` - 'Utopic'
+* Ubuntu `15.04` - 'Vivid'
+* Mint Linux `17.1` - 'Rebecca' or 'Cinnamon'
+* Debian `8.0` - 'Jessie'
 
 *However they do NOT work* for:
 
-* for `Intel i386`
-
-* Debian
-  * `7.0` - 'Wheezy' (oldstable)
+* `Intel i386` architecture
+* Debian `7.0` - 'Wheezy' (oldstable)
 
 ***Download:***
 
-You should download the pkgs marked as: **Ubuntu Apt Repository for 4.x**, go here:
+You should download the pkgs marked as **Ubuntu Apt Repository for 4.x**, from here:
 
 https://tvheadend.org/projects/tvheadend/wiki/AptRepository
 
-*Note:* These debs are marked 'ubuntu' or 'trusty'. But they also work for those other distributions above ^.
-
-*Not supported?*
+***Not supported?***
 
 Missing linux distro? Missing architecture? ---> [See here](#contact).
 
