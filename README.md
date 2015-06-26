@@ -8,6 +8,7 @@
 
 - [Looking for tvheadend builds?](#looking-for-tvheadend-builds)
 - [Reference example: Ubuntu builds](#reference-example-ubuntu-builds)
+- [Docker Images](#docker-images)
 - [Authoring packages for other Distros](#authoring-packages-for-other-distros)
 - [Cross-compiling for ARM](#cross-compiling-for-arm)
 - [Contact](#contact)
@@ -52,6 +53,14 @@ Missing linux distro? Missing architecture? ---> [See here](#contact).
 This is the Reference Guide for package maintainers, it starts here:
 
 * [Maintainers Guide - ubuntu builds](ubuntu/0. maintainers-guide.md)
+
+### Docker Images
+
+Docker images are available at:
+
+https://github.com/dreamcat4/docker-images/blob/master/tvh/README.md
+
+They are always updated with the latest versions of tvheadend coming from this `tvheadend-build` auto-builds system.
 
 ### Authoring packages for other Distros
 
