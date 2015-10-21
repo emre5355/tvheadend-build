@@ -10,9 +10,25 @@ bintray_key="0123456789abcdef0123456789abcdef01234567"
 bintray_repo="ubuntu"
 bintray_pkg_name="tvheadend"
 
-
-# The 'Debian distro' field is the first of 2 keywords when adding to apt sources
-deb_dist="testing"
+# Bintray header line
 oneline_desc="Stable branch - Nightly builds"
+
+# The 'Debian distro' field is the first 1/2 keywords when adding to apt sources
+# e.g. "... stable main". We use this field to specify the branches this file is available to
+deb_dist="testing"
+
+# Bug fix 21/Oct/2015
+# We must be sure to upload for both of these branches when a new version is released (tagged in git).
+# However due to limititations: Bintray API (specifically no API to *modify* an existing uploaded file's deb_dists tag field)...
+#
+# Furthermore, we cannot control yet the order in which Dockerhub's builds are executed.
+# As the 'build just 1 tag-only' build trigger doesn't work yet. It just builds everything.
+#
+# The 2nd build run to upload of these two branches will fail if the version was uploaded
+# already by the first branch to complete it's job.
+#
+# We do this when the $tvh_ver only contains just [0-9.] chars, e.g. "4.0.6" should be uploaded
+# for both of the branches. It is a race condition, so the first build worker to complete will do it.
+deb_dists_when_tagged="testing,stable"
 
 

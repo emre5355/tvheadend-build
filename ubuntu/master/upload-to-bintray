@@ -26,6 +26,7 @@ tvh_deb="$(find /out -name 'tvheadend_*.deb')"
 tvh_changes="$(find /out -name 'tvheadend_*.changes')"
 tvh_dbg_deb="$(find /out -name 'tvheadend-dbg_*.deb')"
 tvh_ver="$(echo $tvh_deb | sed -e 's|.*/tvheadend_||' -e 's|~trusty.*||')"
+echo $tvh_ver | grep -qv "[^0-9.]" && deb_dist="$deb_dists_when_tagged"
 set +x
 
 # Create a new version
