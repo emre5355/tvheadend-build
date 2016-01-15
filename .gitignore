@@ -1,2 +1,20 @@
+.cproject
+.project
+nbproject
+.settings
 
-*.html
+*~
+*.pyc
+.*.sw[op]
+*.bak
+*.orig
+*.patch
+
+#############
+###Windows###
+#############
+
+#windows image file cache
+Thumbs.db
+#Folder config file
+Desktop.ini
