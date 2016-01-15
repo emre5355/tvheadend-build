@@ -3,6 +3,9 @@
 # Build daily PPA
 #
 
+# Load profile
+[ -f $HOME/.profile ] && . $HOME/.profile
+
 # Branch and PPA
 BRANCH=$1
 PPA=$2
@@ -12,9 +15,12 @@ PPA=$2
 # Load BASH settings
 [ -f $HOME/.bashrc ] && . $HOME/.bashrc
 
+# Git URL
+GITURL=git://github.com/tvheadend/tvheadend.git
+
 # Logging
 LOGPATH=$HOME/.tvh/daily.log
-VERPATH=$HOME/.tvh/${BRANCH/\//_}.version
+REFPATH=$HOME/.tvh/${PPA/\//_}.ref
 TMPDIR=/tmp/tvh-daily-$$
 export DEBFULLNAME="Tvheadend (Package Signing Key)"
 export DEBEMAIL="apt@tvheadend.org"
@@ -26,12 +32,11 @@ function log
 
 # Setup logging
 mkdir -p $(dirname $LOGPATH)
-exec 2>&1
-exec 1> $LOGPATH
+#exec 2>&1
+#exec 1> $LOGPATH
 log "begin"
 
 # Remove dir on exit
-echo $TMPDIR
 trap "rm -rf $TMPDIR" EXIT
 
 # Create dir
@@ -39,26 +44,42 @@ log "create TMPDIR=$TMPDIR"
 mkdir -p $TMPDIR || exit 1
 cd $TMPDIR || exit 1
 
-# Download
-log "git clone"
-git clone git://github.com/tvheadend/tvheadend.git tvheadend || exit 1
+# Determine branch
+REF=""
+if [ "${BRANCH}" = "AUTO" ]; then
+  if [ "${PPA}" = "release" ]; then
+    T=$(git ls-remote --tags ${GITURL} | grep -v "\^{}$" | awk '{sub(/refs\/tags\//,"");print $2":"$1}' | grep v[0-9].[02468] | sort | tail -n 1)
+    BRANCH=$(echo $T | cut -d: -f1)
+    REF=$(echo $T | cut -d: -f2)
+  elif [ "${PPA}" = "stable" ]; then
+    T=$(git ls-remote --heads ${GITURL} release/* | awk '{sub(/refs\/heads\//,"");print $2":"$1}' | sort | tail -n 1)
+    BRANCH=$(echo $T | cut -d: -f1)
+    REF=$(echo $T | cut -d: -f2)
+  else
+    BRANCH=master
+  fi
+fi
+[ -z "$REF" ] && REF=$(git ls-remote ${GITURL} ${BRANCH} | awk '{print $1}')
+if [ -z "$REF" ]; then
+  log "ERROR invalid branch ${BRANCH}"
+  exit 1
+fi
+log "using branch/tag ${BRANCH}"
 
-# Checkout branch
-cd tvheadend || exit 1
-git checkout $BRANCH || exit 1
-
-# Check version
-log "check version"
-cur=$(./support/version)
-[ -f "$VERPATH" ] && old=$(cat $VERPATH) || old=""
-if [ "$cur" == "$old" ]; then
+# Check ref
+log "checking reference ${REF}"
+[ -f "$REFPATH" ] && old=$(cat $REFPATH) || old=""
+if [ "$REF" == "$old" ]; then
   log "no change"
   exit 0
 fi
 
+# Download
+log "git clone"
+git clone ${GITURL} tvheadend || exit 1
+
 # Create configuration file
-C=/tmp/pbuilder.conf.$$
-trap "rm -f $C" EXIT
+C=$TMPDIR/pbuilder.conf.$$
 echo > $C
 [ ! -z "$BINTRAY_USER" ] && echo "export BINTRAY_USER=$BINTRAY_USER" >> $C
 [ ! -z "$BINTRAY_PASS" ] && echo "export BINTRAY_USER=$BINTRAY_PASS" >> $C
@@ -69,8 +90,8 @@ export PBUILDER_OPTS="$PBUILDER_OPTS --configfile ${C}"
 
 # Upload
 log "build"
-./support/apt-update $BRANCH $PPA || exit 1
-echo $cur > $VERPATH
+#cd tvheadend && git checkout ${BRANCH} && ./support/apt-update $BRANCH $PPA || exit 1
+echo $REF > $REFPATH
 
 # Done
 log "done"
