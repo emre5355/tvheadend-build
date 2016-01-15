@@ -1,0 +1,71 @@
+Suite: precise
+Codename: precise
+Architectures: i386 amd64 source
+Components: main
+Description: Tvheadend repository
+SignWith: apt@tvheadend.org
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release .gz .bz2
+Tracking: all includechanges keepsources
+Log: logfile
+        --changes /srv/reprepro/common/bin/apt-build
+
+Suite: trusty
+Codename: trusty
+Architectures: i386 amd64 source
+Components: main
+Description: Tvheadend repository
+SignWith: apt@tvheadend.org
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release .gz .bz2
+Tracking: all includechanges keepsources
+Log: logfile
+        --changes /srv/reprepro/common/bin/apt-build
+
+Suite: vivid
+Codename: vivid
+Architectures: i386 amd64 source
+Components: main
+Description: Tvheadend repository
+SignWith: apt@tvheadend.org
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release .gz .bz2
+Tracking: all includechanges keepsources
+Log: logfile
+        --changes /srv/reprepro/common/bin/apt-build
+
+Suite: wily
+Codename: wily
+Architectures: i386 amd64 source
+Components: main
+Description: Tvheadend repository
+SignWith: apt@tvheadend.org
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release .gz .bz2
+Tracking: all includechanges keepsources
+Log: logfile
+        --changes /srv/reprepro/common/bin/apt-build
+
+Suite: wheezy
+Codename: wheezy
+Architectures: i386 amd64 armhf source
+Components: main
+Description: Tvheadend repository
+SignWith: apt@tvheadend.org
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release .gz .bz2
+Tracking: all includechanges keepsources
+Log: logfile
+        --changes /srv/reprepro/common/bin/apt-build
+
+Suite: jessie
+Codename: jessie
+Architectures: i386 amd64 armhf armel source
+Components: main
+Description: Tvheadend repository
+SignWith: apt@tvheadend.org
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release .gz .bz2
+Tracking: all includechanges keepsources
+Log: logfile
+        --changes /srv/reprepro/common/bin/apt-build

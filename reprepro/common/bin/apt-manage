@@ -1,0 +1,232 @@
+#!/usr/bin/env python
+#
+# Scripts to manage the tvheadend (and showtime?) apt repositories
+#
+
+import os, sys, re, shutil, fcntl, string
+import syslog
+from subprocess import Popen, call, PIPE
+
+PBUILDER_RESULT = '/var/cache/pbuilder/result'
+APT_ROOT        = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), '..', '..'))
+DIST_CONF       = os.path.join(APT_ROOT, 'common', 'conf', 'distributions')
+REBUILD_JOB     = '/usr/sbin/rebuildd-job'
+REPREPRO        = '/usr/bin/reprepro'
+LOG             = None
+BINTRAY_KEY     = '2ebb3623e9d7e0a3f6281d938948f67eff8cec51'
+BINTRAY_USER    = 'adamsutton'
+BINTRAY_REPO    = 'tvheadend/deb'
+
+# Arch list
+#   TODO: make dynamic
+def get_archs ( d ):
+  r = []
+  o = False
+  for l in open(DIST_CONF):
+    if l.startswith('Suite:'):
+      o = d in l
+    elif o and l.startswith('Architectures:'):
+      p = map(string.strip, l.split(':'))
+      for a in map(string.strip, p[1].split(' ')):
+        if a != 'source':
+          r.append(a)
+      break
+  return r
+
+# Dist list
+#   TODO: make dynamic
+def get_dists ():
+  r = []
+  for l in open(DIST_CONF):
+    if l.startswith('Suite:'):
+      p = map(string.strip, l.split(':'))
+      r.append(p[1])
+  return r
+
+# Lock repo
+def lock ( p ):
+  p = os.path.join(p, '.lock')
+  f = open(p, 'w')
+  fcntl.flock(f, fcntl.LOCK_EX)
+  return f
+
+# Log
+def log ( m ):
+  print m
+  syslog.syslog(syslog.LOG_DEBUG, m)
+  if LOG: LOG.write('%s\n"' % m)
+  pass
+
+# Push builds
+def build ( args ):
+  
+  # Get args
+  if len(args) < 5:
+    return 1
+  a = args[0] # accepted
+  d = args[1] # dist
+  p = args[2] # package
+  v = args[3] # version
+  c = args[4] # changes
+  log('apt-build  : %s dist=%s pkg=%s ver=%s chg=%s' % (a, d, p, v, c))
+  log('apt-build  : args = [%s]' % str(args))
+
+  # Optional? 6th arg
+  args = args[5:]
+  if len(args) > 0:
+    if '.changes' in args[0]:
+      args = args[1:]
+
+  # override arch
+  if len(args) > 0:
+    arch = args
+  else:
+    arch = get_archs(d)
+
+  # Final checks
+  if a != 'accepted':
+    return 0
+  if not c.endswith('_source.changes'):
+    return 0
+
+  # Post jobs
+  cmd = [REBUILD_JOB, 'add']
+  pr  = Popen(cmd, stdin=PIPE, stderr=LOG, stdout=LOG)
+  for a in arch:
+    job = '%s %s 1 %s %s' % (p, v, d, a)
+    log('apt-build  : post job [%s]' % job)
+    pr.stdin.write(job + '\n')
+  pr.stdin.close()
+  return pr.wait()
+
+# Get sources
+def source ( args ):
+  ext = [ '.dsc', '.bz2', '.gz' ]
+
+  # Get args
+  if len(args) < 3:
+    return 1
+  d = args[0]
+  p = args[1]
+  v = args[2]
+  log('apt-source  : find source dist=%s pkg=%s ver=%s' % (d, p, v))
+
+  for (rp, ds, fs) in os.walk(APT_ROOT):
+    for f in fs:
+      l = '%s_%s' % (p, v)
+      if l in f:
+        for e in ext:
+          if f.endswith(e):
+            pa = os.path.join(rp, f)
+            log('apt-source  : located [%s]' % pa)
+            if not os.path.exists(f):
+              shutil.copy(pa, f)
+
+  return 0
+
+# Upload
+def upload ( args ):
+
+  # Get args
+  if len(args) < 4:
+    return 1
+  d = args[0] # distribution
+  p = args[1] # package
+  v = args[2] # version
+  a = args[3] # arch
+  log('apt-upload  : dist=%s pkg=%s ver=%s arch=%s' % (d, p, v, a))
+
+  # Find repo
+  repo = None
+  for (rp, ds, fs) in os.walk(APT_ROOT):
+    for f in fs:
+      if ('%s_%s_source.changes' % (p, v)) in f:
+        pchg = os.path.join(rp, f)
+        pdeb = os.path.join(rp, '%s_%s_%s.deb' % (p, v, a))
+        pdbg = os.path.join(rp, '%s-dbg_%s_%s.deb' % (p, v, a))
+        rp   = rp.replace(APT_ROOT + '/', '')
+        repo = os.path.join(APT_ROOT, rp[:rp.find('/')])
+        log('apt-upload  : processing for [%s]' % rp)
+
+        # Store
+        with lock(repo):
+          pa = os.path.join(PBUILDER_RESULT, '%s_%s_%s.deb' % (p, v, a))
+          if os.path.exists(pa):
+            log('apt-upload  : storing [%s]' % pa)
+            cmd = [REPREPRO, '-b', repo, 'includedeb', d, pa]
+            log('apt-upload  : execute [%s]' % str(cmd))
+            call(cmd)
+          pa = os.path.join(PBUILDER_RESULT, '%s-dbg_%s_%s.deb' % (p, v, a))
+          if os.path.exists(pa):
+            log('apt-upload  : storing [%s]' % pa)
+            cmd = [REPREPRO, '-b', repo, 'includedeb', d, pa]
+            log('apt-upload  : execute [%s]' % str(cmd))
+            call(cmd)
+
+        # Send to bintray
+        bintray(os.path.basename(repo), d, p, v, a, [ pdeb,  pdbg, pchg ])
+
+  return 0
+
+# Send to bintray
+def bintray ( repo, dist, pkg, version, arch, files ):
+
+  # Fix versio (remove dist)
+  ve      = re.compile('(\d+\.\d+)')
+  version = version.replace('~%s' % dist, '')
+  vshort  = version
+  r       = ve.search(vshort)
+  if r: vshort = r.group(1)
+ 
+  # Upload each file
+  for path in files:
+    name = os.path.basename(path)
+    name = 'pool/%s/%s/%s' % (vshort, version, name)
+    log('apt-bintray : uploading [%s]' % name)
+
+    # Command
+    cmd = [ 'curl', '-T',  path, '-u%s:%s' % (BINTRAY_USER, BINTRAY_KEY),
+            'https://api.bintray.com/content/%s/%s/%s/%s;deb_distribution=%s;deb_component=%s;deb_architecture=%s;publish=1' % (BINTRAY_REPO, pkg, version, name, dist, repo, arch) ]
+
+    # Execute
+    log('apt-bintray : execute [%s]' % str(cmd))
+    call(cmd)
+    print ''
+
+# Update all repos
+def update ( args ):
+  repos = [ 'unstable',  'stable', 'release', 'obsolete' ]
+
+  for r in repos:
+    p = os.path.join(APT_ROOT, r)
+    log('apt-update  : processing [%s]' % r)
+    with lock(p):
+      cmd = [REPREPRO, '-b', p, 'processincoming', 'incoming']
+      log('%s' % cmd)
+      call(cmd, stdout=LOG, stderr=LOG)
+
+  return 0
+
+# Main
+if __name__ == '__main__':
+  try:
+    cmd  = os.path.basename(sys.argv[0])
+    args = sys.argv[1:]
+    r    = 1
+    syslog.openlog(cmd)
+  
+    if cmd == 'apt-build':
+      r = build(args)
+    elif cmd == 'apt-source':
+      r = source(args)
+    elif cmd == 'apt-upload':
+      r = upload(args)
+    elif cmd == 'apt-update':
+      r = update(args)
+    sys.exit(r)
+
+  except Exception, e:
+    import traceback
+    s = traceback.format_exc(e)
+    print s
+    syslog.syslog(syslog.LOG_ERR, s)

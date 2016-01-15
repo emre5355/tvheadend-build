@@ -1,0 +1,106 @@
+#!/bin/bash
+#
+# Script to run to add/remove distribution
+#
+
+# Command line
+ACT=$1
+DIST=$2
+if [ -z "$DIST" ]; then
+  echo "ERROR: no distribution provided"
+  exit 1
+fi
+shift
+shift
+ARCH=$*
+[ -z "$ARCH" ] && ARCH="i386 amd64"
+
+# Paths
+PBUILDER_ROOT=/var/cache/pbuilder
+REPREPRO_ROOT=/srv/reprepro
+REPREPRO_CONF=$REPREPRO_ROOT/common/conf
+REBUILDD_CONF=/etc/rebuildd/rebuilddrc
+REBUILDD_BUILD=/var/cache/rebuildd/build
+
+# Add new dist
+if [ "$ACT" = "add" -o "$ACT" = "update" ]; then
+
+  # Foreach arch
+  for a in $ARCH; do
+
+    # Use raspbian
+    OPTS=""
+    if [ "$a" = "armhf" ]; then
+      OPTS="--debootstrapopts --keyring=/usr/share/keyrings/raspbian-archive-keyring.gpg --release-only"
+      export PBUILDER_DIST_DEBIAN_MIRROR=http://archive.raspbian.org/raspbian
+    else
+      unset PBUILDER_DIST_DEBIAN_MIRROR
+    fi
+
+    # Build pbuilder images
+    pbuilder-dist $DIST $a create ${OPTS}
+ 
+    # Store
+    [ "$a" = "amd64" ] && t="" || t="-${a}"
+    mv ~/pbuilder/${DIST}${t}-base.tgz /var/cache/pbuilder/${DIST}-${a}.tgz
+
+  done
+
+  [ "$ACT" = "update" ] && exit 0
+
+  # Reprepro config
+  cat >> $REPREPRO_CONF/distributions <<EOF
+
+Suite: $DIST
+Codename: $DIST
+Architectures: $ARCH source
+Components: main
+Description: Tvheadend repository
+SignWith: apt@tvheadend.org
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release .gz .bz2
+Tracking: all includechanges keepsources
+Log: logfile
+        --changes /srv/reprepro/common/bin/apt-build
+EOF
+  sed -i "s/Allow: .*/\0 $DIST/" $REPREPRO_CONF/incoming
+
+  # Rebuildd
+  sed -i "s/dists = .*/\0 $DIST/" $REBUILDD_CONF
+
+  # Restart rebuildd
+  /etc/init.d/rebuildd stop
+  /etc/init.d/rebuildd start
+  /etc/init.d/rebuildd-httpd stop
+  /etc/init.d/rebuildd-httpd start
+
+  # Force new daily
+  #/root/bin/tvh-daily
+
+# Remove
+elif [ "$ACT" = "del" ]; then
+
+  # Remove pbuilder images
+  rm -rf $PBUILDER_ROOT/$DIST-{i386,amd64}.tgz
+
+  # Remove from rebuildd
+  sed -i "s/ $DIST//g" $REBUILDD_CONF
+  rm -f $REBUILDD_BUILD/*$DIST*.{tar.gz,dsc}
+  #for l in $(rebuildd-job list dist=$DIST | awk {'print $1'}); do
+  #  rebuildd-job delete $l
+  #done
+
+  # Clear reprepro
+  sed -i "s/ $DIST//g" $REPREPRO_CONF/incoming
+  sed -i -e '/./{H;$!d;}' -e "x;/Suite: $DIST/d;" $REPREPRO_CONF/distributions 
+  for r in unstable beta stable; do
+    reprepro -b $REPREPRO_ROOT/$r remove $DIST tvheadend
+    reprepro -b $REPREPRO_ROOT/$r --delete clearvanished
+  done
+
+  # Restart rebuildd
+  /etc/init.d/rebuildd stop
+  /etc/init.d/rebuildd start
+  /etc/init.d/rebuildd-httpd stop
+  /etc/init.d/rebuildd-httpd start
+fi

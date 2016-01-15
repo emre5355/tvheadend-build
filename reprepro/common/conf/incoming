@@ -1,0 +1,6 @@
+Name: incoming
+IncomingDir: incoming
+Allow: trusty precise wily vivid jessie wheezy
+Cleanup: on_deny on_error
+Tempdir: incomingtmp
+Permit: older_version

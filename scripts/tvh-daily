@@ -1,0 +1,77 @@
+#!/bin/bash
+# 
+# Build daily PPA
+#
+
+# Branch and PPA
+BRANCH=$1
+PPA=$2
+[ -z "$BRANCH" ] && BRANCH="master"
+[ -z "$PPA"    ] && PPA="unstable"
+
+# Load BASH settings
+[ -f $HOME/.bashrc ] && . $HOME/.bashrc
+
+# Logging
+LOGPATH=$HOME/.tvh/daily.log
+VERPATH=$HOME/.tvh/${BRANCH/\//_}.version
+TMPDIR=/tmp/tvh-daily-$$
+export DEBFULLNAME="Tvheadend (Package Signing Key)"
+export DEBEMAIL="apt@tvheadend.org"
+
+function log
+{
+  echo "$(date +'%F %T') [$(basename $0)] $*"
+}
+
+# Setup logging
+mkdir -p $(dirname $LOGPATH)
+exec 2>&1
+exec 1> $LOGPATH
+log "begin"
+
+# Remove dir on exit
+echo $TMPDIR
+trap "rm -rf $TMPDIR" EXIT
+
+# Create dir
+log "create TMPDIR=$TMPDIR"
+mkdir -p $TMPDIR || exit 1
+cd $TMPDIR || exit 1
+
+# Download
+log "git clone"
+git clone git://github.com/tvheadend/tvheadend.git tvheadend || exit 1
+
+# Checkout branch
+cd tvheadend || exit 1
+git checkout $BRANCH || exit 1
+
+# Check version
+log "check version"
+cur=$(./support/version)
+[ -f "$VERPATH" ] && old=$(cat $VERPATH) || old=""
+if [ "$cur" == "$old" ]; then
+  log "no change"
+  exit 0
+fi
+
+# Create configuration file
+C=/tmp/pbuilder.conf.$$
+trap "rm -f $C" EXIT
+echo > $C
+[ ! -z "$BINTRAY_USER" ] && echo "export BINTRAY_USER=$BINTRAY_USER" >> $C
+[ ! -z "$BINTRAY_PASS" ] && echo "export BINTRAY_USER=$BINTRAY_PASS" >> $C
+[ ! -z "$BINTRAY_REPO" ] && echo "export BINTRAY_USER=$BINTRAY_REPO" >> $C
+
+# Setup pbuilder options
+export PBUILDER_OPTS="$PBUILDER_OPTS --configfile ${C}"
+
+# Upload
+log "build"
+./support/apt-update $BRANCH $PPA || exit 1
+echo $cur > $VERPATH
+
+# Done
+log "done"
+
