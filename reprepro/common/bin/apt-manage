@@ -4,7 +4,7 @@
 #
 
 import os, sys, re, shutil, fcntl, string
-import syslog
+import syslog, json, time
 from subprocess import Popen, call, PIPE
 
 PBUILDER_RESULT = '/var/cache/pbuilder/result'
@@ -13,7 +13,7 @@ DIST_CONF       = os.path.join(APT_ROOT, 'common', 'conf', 'distributions')
 REBUILD_JOB     = '/usr/sbin/rebuildd-job'
 REPREPRO        = '/usr/bin/reprepro'
 LOG             = None
-BINTRAY_KEY     = '2ebb3623e9d7e0a3f6281d938948f67eff8cec51'
+BINTRAY_KEY     = os.environ['BINTRAY_KEY']
 BINTRAY_USER    = 'adamsutton'
 BINTRAY_REPO    = 'tvheadend/deb'
 
@@ -193,6 +193,92 @@ def bintray ( repo, dist, pkg, version, arch, files ):
     call(cmd)
     print ''
 
+# Get bintray response
+def bintray_get ( p, cmd = 'GET' ):
+  cmd = [ 'curl', '-X', cmd, '-u%s:%s' % (BINTRAY_USER, BINTRAY_KEY),
+          'https://api.bintray.com/%s' % p ]
+  log('apt-clean: execute [%s]' % str(cmd))
+  try:
+    p   = Popen(cmd, stderr=PIPE, stdout=PIPE)
+    d   = p.stdout.read()
+    d   = json.loads(d)
+    return d
+  except: pass
+  return None
+
+# Clean bintray
+# TODO: could make this a bit more selective
+def clean ():
+
+  # Get package summary
+  d = bintray_get('packages/%s/tvheadend' % BINTRAY_REPO)
+  
+  # Build list of versions
+  todelete = []
+  unstable = []
+  stable   = []
+  release  = []
+  exp      = re.compile('(\d+)\.(\d+)(\.\d+)?(-\d+)?')
+  for v in d['versions']:
+    r  = exp.search(v)
+    if not r: continue
+    mm = (int(r.group(1)), int(r.group(2)))
+    p  = 0
+    b  = 0
+    if r.group(3): p = int(r.group(3)[1:])
+    if r.group(4): b = int(r.group(4)[1:])
+
+    # Unstable
+    if mm[1] & 0x1:
+      unstable.append((mm, p, b, v))
+    
+    # Stable
+    elif b != 0:
+      stable.append((mm, p, b, v))
+
+    # Release
+    else:
+      release.append((mm, p, b, v))
+
+  # Sort everything
+  unstable.sort(reverse=True)
+  stable.sort(reverse=True)
+  release.sort()
+
+  # Delete everythign not in latest unstable stream and keep last 5
+  # of current unstable
+  if unstable:
+    for i in range(len(unstable)):
+      mm, p, b, v = unstable[i]
+      if mm < unstable[0][0] or i >= 5:
+        todelete.append(unstable)
+
+  # Delete everything except the last entry in each stable stream
+  s = (0, 0)
+  for mm, p, b, v in stable:
+    if mm != s:
+      s = mm
+    else:
+      todelete.append(v)
+
+  # Delete everything else (except we keep anythign adding in last 7 days)
+  now = time.time()
+  for v in todelete:
+    u  = 'packages/%s/tvheadend/versions/%s' % (BINTRAY_REPO, v)
+
+    # Get info
+    d  = bintray_get(u)
+    tm = time.mktime(time.strptime(d['created'][:19], '%Y-%m-%dT%H:%M:%S'))
+  
+    # Ignore  
+    if (now - tm) < 7 * 86400:
+      log('skip %s (<7 days old)' % v)
+      continue
+
+    # delete
+    log('delete %s' % v)
+    bintray_get(u, cmd='DELETE')
+    
 # Update all repos
 def update ( args ):
   repos = [ 'unstable',  'stable', 'release', 'obsolete' ]
@@ -223,6 +309,8 @@ if __name__ == '__main__':
       r = upload(args)
     elif cmd == 'apt-update':
       r = update(args)
+    elif cmd == 'apt-clean':
+      r = clean()
     sys.exit(r)
 
   except Exception, e:
