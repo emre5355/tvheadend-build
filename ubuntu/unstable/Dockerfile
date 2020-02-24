@@ -10,9 +10,17 @@ RUN git pull \
 		else echo "error: no git tag for v${tvh_major_ver}.x unstable" && false ; fi
 
 
+# Write dist into intermediate build script
+RUN if [ ! -e "Autobuild/focal-amd64.sh" ]; then \
+ printf "AUTOBUILD_CONFIGURE_EXTRA=\"\${AUTOBUILD_CONFIGURE_EXTRA:-} --arch=x86_64\"\nDEBDIST=cosmic\nsource Autobuild/debian.sh\n" \
+  > "Autobuild/focal-amd64.sh"; fi \
+ && sed -i -e "s/python,/python3,/" debian/control \
+ && if [ ! -e /usr/bin/python ]; then ln -s /usr/bin/python3 /usr/bin/python; fi
+
+
 # Compile tvheadend .deb pkgs
-RUN if [ -e "Autobuild/trusty-amd64.sh" ]; then target=trusty; else target=precise; fi \
- && AUTOBUILD_CONFIGURE_EXTRA="--enable-libffmpeg_static --enable-hdhomerun_static --enable-dvbcsa --enable-bundle" ./Autobuild.sh -w /build/work -t ${target}-amd64 \
+RUN if [ -e "Autobuild/focal-amd64.sh" ]; then target=focal; else target=cosmic; fi \
+ && AUTOBUILD_CONFIGURE_EXTRA="--nowerror --python=python3 --enable-libffmpeg_static --enable-hdhomerun_static --enable-dvbcsa --enable-bundle" ./Autobuild.sh -w /build/work -t ${target}-amd64 \
  && mv /build/*.deb /out && mv /build/*.changes /out && rm -rf /build
 
 
